@@ -211,7 +211,7 @@
 
 <script>
     // ==========================================
-    // 📚 5-POINT DATA (Exam Level)
+    // 📚 5-POINT DATA (Updated Vocabulary)
     // ==========================================
     const BAGRUT_PASSAGES = [
         {
@@ -246,13 +246,60 @@
         }
     ];
 
+    // MERGED VOCABULARY LIST (50 Words)
     const BAND_III_VOCAB = [
-        {w:"Inevitably", s:"Unavoidably", o:["Rarely","Mistakenly","Surprisingly"]},
-        {w:"Ambiguous", s:"Unclear", o:["Obvious","Bright","Simple"]},
-        {w:"Reluctant", s:"Unwilling", o:["Eager","Confident","Happy"]},
-        {w:"Substantial", s:"Significant", o:["Tiny","Minor","Weak"]},
-        {w:"Implement", s:"Carry out", o:["Cancel","Stop","Think"]},
-        {w:"Acquire", s:"Obtain", o:["Lose","Reject","Give"]}
+        // User List
+        {w:"abandon", s:"desert", o:["adopt","support","cherish"]},
+        {w:"abundant", s:"plentiful", o:["scarce","rare","limited"]},
+        {w:"acknowledge", s:"recognize", o:["ignore","deny","reject"]},
+        {w:"adapt", s:"adjust", o:["resist","ignore","reject"]},
+        {w:"adequate", s:"sufficient", o:["insufficient","poor","lacking"]},
+        {w:"advantage", s:"benefit", o:["disadvantage","drawback","harm"]},
+        {w:"affect", s:"influence", o:["ignore","avoid","protect"]},
+        {w:"ambitious", s:"determined", o:["lazy","content","timid"]},
+        {w:"anticipate", s:"expect", o:["ignore","avoid","forget"]},
+        {w:"apparent", s:"obvious", o:["hidden","unclear","secret"]},
+        {w:"append", s:"attach", o:["remove","detach","separate"]},
+        {w:"appreciate", s:"value", o:["dislike","ignore","undervalue"]},
+        {w:"approximate", s:"rough", o:["exact","precise","accurate"]},
+        {w:"arbitrary", s:"random", o:["logical","planned","systematic"]},
+        {w:"assert", s:"state", o:["suggest","hint","imply"]},
+        {w:"assess", s:"evaluate", o:["ignore","overlook","neglect"]},
+        {w:"assumption", s:"supposition", o:["fact","proof","certainty"]},
+        {w:"authentic", s:"genuine", o:["fake","false","counterfeit"]},
+        {w:"authority", s:"power", o:["weakness","subordination","impotence"]},
+        {w:"automated", s:"automatic", o:["manual","human","hand-operated"]},
+        
+        // Base List
+        {w:"Accomplish", s:"Achieve / Finish", o:["Fail","Destroy","Ignore"]},
+        {w:"Accumulate", s:"Gather / Collect", o:["Scatter","Divide","Lose"]},
+        {w:"Ambiguous", s:"Unclear / Vague", o:["Obvious","Definite","Clear"]},
+        {w:"Appropriate", s:"Suitable / Fitting", o:["Incorrect","Wrong","Rude"]},
+        {w:"Benefit", s:"Advantage / Profit", o:["Loss","Damage","Harm"]},
+        {w:"Capable", s:"Able / Skilled", o:["Incompetent","Weak","Slow"]},
+        {w:"Coincide", s:"Happen together", o:["Differ","Separate","Conflict"]},
+        {w:"Commence", s:"Begin / Start", o:["End","Finish","Stop"]},
+        {w:"Competent", s:"Efficient / Capable", o:["Clumsy","Unable","Silly"]},
+        {w:"Consequence", s:"Result / Outcome", o:["Cause","Origin","Source"]},
+        {w:"Considerable", s:"Significant / Large", o:["Tiny","Minor","Small"]},
+        {w:"Consistent", s:"Steady / Constant", o:["Changing","Random","Erratic"]},
+        {w:"Contradict", s:"Oppose / Deny", o:["Agree","Confirm","Accept"]},
+        {w:"Crucial", s:"Critical / Important", o:["Trivial","Minor","Optional"]},
+        {w:"Decline", s:"Refuse / Go down", o:["Accept","Increase","Rise"]},
+        {w:"Demonstrate", s:"Show / Prove", o:["Hide","Cover","Guess"]},
+        {w:"Deprive", s:"Take away", o:["Give","Supply","Offer"]},
+        {w:"Deteriorate", s:"Get worse", o:["Improve","Heal","Fix"]},
+        {w:"Devise", s:"Invent / Plan", o:["Destroy","Copy","Break"]},
+        {w:"Diminish", s:"Decrease / Reduce", o:["Grow","Expand","Increase"]},
+        {w:"Distinguish", s:"Differentiate", o:["Confuse","Mix","Ignore"]},
+        {w:"Elaborate", s:"Detailed / Complex", o:["Simple","Basic","Plain"]},
+        {w:"Emphasis", s:"Importance / Stress", o:["Neglect","Silence","Weakness"]},
+        {w:"Endure", s:"Suffer / Last", o:["Quit","Stop","Die"]},
+        {w:"Essential", s:"Necessary", o:["Optional","Extra","Unneeded"]},
+        {w:"Evident", s:"Clear / Obvious", o:["Hidden","Secret","Vague"]},
+        {w:"Exhaust", s:"Tire out / Use up", o:["Energize","Fill","Create"]},
+        {w:"Fundamental", s:"Basic / Primary", o:["Advanced","Minor","Extra"]},
+        {w:"Generate", s:"Create / Produce", o:["Destroy","Stop","End"]}
     ];
 
     const GRAMMAR = [
@@ -269,22 +316,18 @@
         let qs = [];
         
         // --- BAGRUT SIMULATION (Levels 4, 5, 6) ---
-        // Level 4 -> Passage 0, Level 5 -> Passage 1...
         if (level >= 4 && level <= 6) {
             let pIdx = (level - 4) % BAGRUT_PASSAGES.length;
             let p = BAGRUT_PASSAGES[pIdx];
             
-            // 1. Text Questions
             p.questions.forEach(pq => {
                 qs.push({ 
                     t:'unseen', text:p.text, title:p.title, 
                     q:pq.q, a:pq.a, 
-                    // FIX: Explicitly combine answer + opts then shuffle
                     opts: shuffle([pq.a, ...pq.opts]) 
                 });
             });
 
-            // 2. Vocab from Text
             p.vocabTargets.forEach(v => {
                 qs.push({ 
                     t:'vocab', q:`In the text, "${v.w}" means:`, 
@@ -293,7 +336,6 @@
                 });
             });
 
-            // 3. Fill rest to 20
             let needed = 20 - qs.length;
             for(let i=0; i<needed; i++) {
                 if(Math.random()>0.5) addGrammar(qs); else addVocab(qs);
@@ -305,10 +347,9 @@
         let attempts = 0;
         while(qs.length < 20 && attempts < 300) {
             attempts++;
-            // Unseen occasionally
             if((qs.length+1)%5===0) {
                 let p = BAGRUT_PASSAGES[Math.floor(Math.random()*BAGRUT_PASSAGES.length)];
-                let pq = p.questions[0]; // Sample question
+                let pq = p.questions[0];
                 qs.push({ 
                     t:'unseen', text:p.text, title:p.title, 
                     q:pq.q, a:pq.a, 
@@ -330,7 +371,6 @@
             a:v.s, 
             opts: shuffle([v.s, ...v.o]) 
         };
-        // Simple dedup based on question text
         if(!arr.some(x=>x.q===qObj.q)) arr.push(qObj);
     }
 
@@ -398,7 +438,6 @@
         
         for(let i=1; i<=13; i++) {
             let lk = i > player.level;
-            // Levels 4,5,6 are EXAMS
             let isExam = (i >= 4 && i <= 6);
             let d = document.createElement('div');
             d.className = `level-card ${lk?'locked':''}`;
@@ -476,7 +515,6 @@
     function nav(dir) {
         let next = qIdx + dir;
         if(next < 0) return;
-        // Block forward if not solved (unless admin)
         if(dir === 1 && !questions[qIdx].solved && !isAdmin) return;
         if(next >= questions.length) { finishLevel(); return; }
         qIdx = next;
@@ -509,7 +547,6 @@
     const panel = document.getElementById('admin-panel');
     const head = document.getElementById('adm-head');
     
-    // Drag Logic
     let isDown=false, offX, offY;
     head.addEventListener('mousedown', (e)=>{isDown=true; offX=e.offsetX; offY=e.offsetY});
     document.addEventListener('mouseup', ()=>{isDown=false});
